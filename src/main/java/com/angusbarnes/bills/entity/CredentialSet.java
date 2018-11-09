@@ -24,7 +24,7 @@ public class CredentialSet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private User user;
-    
+
     private byte[] passwordHash;
     private byte[] passwordSalt;
     
