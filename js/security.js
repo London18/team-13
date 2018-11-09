@@ -3,3 +3,11 @@ function s(str) {
 	temp.textContent = str;
 	return temp.innerHTML;
 }
+
+function checkLogin() {
+  var data = {};
+  $.post("/isLoggedIn", data, function(data) {
+    var loggedIn = JSON.parse(data);
+  });
+  if (!loggedIn) window.location.replace("./index.html");
+}

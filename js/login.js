@@ -1,6 +1,6 @@
 $(document).ready( function() {
 
-  $(".login").submit(function(e) {
+  $("#login").submit(function(e) {
     var username = s($(this.elements['username']).val());
     var password = s($(this.elements['password']).val());
 
@@ -12,7 +12,8 @@ $(document).ready( function() {
 
     e.preventDefault();
 
-    if (received) location.reload();
+    if (received) window.location.replace("./home.html");
+    window.location.replace("./index.html");
 
   }
 }
