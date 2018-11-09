@@ -7,7 +7,7 @@ function s(str) {
 function checkLogin() {
   var data = {};
   $.post("/isLoggedIn", data, function(data) {
-    var username = JSON.parse(data);
+    var received = JSON.parse(data);
   });
-  if (username = "") window.location.replace("./index.html");
+  if (received.username = "") window.location.replace("./index.html");
 }
