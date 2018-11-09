@@ -22,7 +22,7 @@ $(document).ready( function() {
       var comment = s($(this.elements['comment']).val());
       var sid = s($(this.elements['sid']).val());
 
-      var data = {'action': username, 'comment': password};
+      var data = {'action': username, 'comment': password, 'sid': sid};
 
       $.post("/postAction", data, function(data) {
         var received = JSON.parse(data);
@@ -33,5 +33,18 @@ $(document).ready( function() {
       e.preventDefault();
 
     }
+
+  }
+
+  $("#logout").submit(function(e) {
+
+    var data = {};
+    $.post("/logout", data, function(data) {
+      var received = JSON.parse(data);
+    });
+
+    window.location.replace("./index.html");
     
+  });
+
 }
