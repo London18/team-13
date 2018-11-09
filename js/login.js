@@ -12,7 +12,7 @@ $(document).ready( function() {
 
     e.preventDefault();
 
-    if (received) window.location.replace("./home.html");
+    if (received.result) window.location.replace("./home.html");
     window.location.replace("./index.html");
 
   }

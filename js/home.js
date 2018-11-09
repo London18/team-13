@@ -4,11 +4,23 @@ $(document).ready( function() {
 
   var date = new Date();
 
-  var data = {'date': date.toJSON()};
+  var data = {};
 
   $.post("/getSchedule", data, function(data) {
-    var schedule = JSON.parse(data);
+    var received = JSON.parse(data);
   });
+
+  var html;
+
+  for (i in received.schedule) {
+    html += "<tr id='" + s(received.schedule[i].sid) + "'><td>" + s(received.schedule[i].fname) + "</td>";
+    html += "<td>" + s(received.schedule[i].start) + "</td>";
+    html += "<td>" + s(received.schedule[i].end) + "</td>";
+    html += "<td>" + s(received.schedule[i].faddr) + "</td>";
+    html += "<td class='status'>" + s(received.schedule[i].status) + "</td></tr>";
+  }
+
+  document.getElementByID('schedule_entries').append(html);
 
   var submitted = false;
 
@@ -44,7 +56,7 @@ $(document).ready( function() {
     });
 
     window.location.replace("./index.html");
-    
+
   });
 
 }
