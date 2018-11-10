@@ -22,6 +22,21 @@ $(document).ready( function() {
 
   document.getElementByID('schedule_entries').append(html);
 
+  $.post("/getActivity", data, function(data) {
+    var received = JSON.parse(data);
+  });
+
+  var html;
+
+  for (i in received.activity) {
+    html += "<tr id='" + s(received.activity[i].vid) + "'><td>" + s(received.activity[i].time) + "</td>";
+    html += "<td>" + s(received.activity[i].action) + "</td>";
+    html += "<td>" + s(received.activity[i].comments) + "</td></tr>";
+  }
+
+  document.getElementByID('activity_entries').append(html);
+
+
   var submitted = false;
 
   $(".action").submit(function(e) {
