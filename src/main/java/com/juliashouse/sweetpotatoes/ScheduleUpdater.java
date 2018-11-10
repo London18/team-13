@@ -62,6 +62,7 @@ public class ScheduleUpdater {
                                 ScheduleCarer sc2 = new ScheduleCarer(se, carer2);
                                 ScheduleCarer sc3 = new ScheduleCarer(se, carer3);
 
+
                                 ser.save(se);
                                 scr.save(sc1);
                                 scr.save(sc2);
