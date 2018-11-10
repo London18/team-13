@@ -9,20 +9,12 @@ import com.angusbarnes.bills.service.DateService;
 import com.angusbarnes.bills.service.SecurityService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +46,7 @@ public class BillsController {
     private ScheduleEventRepository scheduleEventRepository;
     @Autowired
     private VisitUpdateRepository visitUpdateRepository;
-    
+
     private static RuntimeException logAndThrow (String m) {
         return getLogAndThrower(m).get();
     }
