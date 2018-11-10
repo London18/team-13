@@ -2,10 +2,13 @@ package com.angusbarnes.bills;
 
 import com.angusbarnes.bills.entity.Carer;
 import com.angusbarnes.bills.entity.ScheduleCarer;
+import com.angusbarnes.bills.entity.ScheduleEvent;
 import com.angusbarnes.bills.entity.VisitUpdate;
+import
 
 import java.util.Date;
 import java.util.List;
+
 
 public class NotificationSender {
 
@@ -29,8 +32,14 @@ public class NotificationSender {
 
     private boolean isScheduleEventEnded(ScheduleCarer session) {
         Date now = new Date();
+        return session.getScheduleEvent().getEnd().after(now);
+    }
 
-        if (session.getScheduleEvent().getEnd().after(now....));
+    private boolean afterScheduleEventBy(ScheduleEvent se) {
+        Date now = new Date();
+        int x = 120;
+        Date endMinutesLater = new Date(se.getEnd().getTime() + x * 60 * 1000);
+        return now.after(endMinutesLater);
     }
 
     private boolean isHome(ScheduleCarer session) {
@@ -42,13 +51,6 @@ public class NotificationSender {
         return false;
     }
 
-    private boolean xHoursPassedAfterLeaving(float x) {
-
-    }
-
-    private boolean xHoursPassedAfterScheduleEventEnded(float x) {
-    }
-
     // Carer: (CarerID), Name, Address, Email, Phone
     // ScheduleEvent: (ScheduleID), Date, Start, End, FID
     // VisitUpdate: (VisitID), ScheduleCarerID action, time, comment
@@ -56,9 +58,13 @@ public class NotificationSender {
     public void sendNotifications(List<Carer> allCarers) {
         for (Carer carer : allCarers) {
             for (ScheduleCarer session : carer.getScheduleCarers()) {
-                if (hasLeft(session) && !isHome(session) && xHoursPassedAfterLeaving(2.1f)) {
+                if (hasLeft(session)
+                        && !isHome(session)
+                        && afterLeavingBy(2.1f)) {
 
-                } else if (isScheduleEventEnded() && !hasLeft(session) && xHoursPassedAfterScheduleEventEnded()) {
+                } else if (isScheduleEventEnded(session)
+                        && !hasLeft(session)
+                        && afterScheduleEventBy(session.getScheduleEvent())) {
 
                 } else {
                     // We're fine!
