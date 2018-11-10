@@ -24,10 +24,9 @@ public class Family {
     protected Family() {
     }
 
-    public Family(String name, String address, List<ScheduleEvent> scheduleEvents) {
+    public Family(String name, String address) {
         this.name = name;
         this.address = address;
-        this.scheduleEvents = scheduleEvents;
     }
 
     public Long getId() {
