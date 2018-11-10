@@ -28,19 +28,22 @@ public class User {
     
     @OneToOne(mappedBy = "user",
               fetch = FetchType.LAZY,
-              cascade = CascadeType.ALL)
+              cascade = CascadeType.ALL,
+              optional = false)
     private CredentialSet credentialSet;
+
+    @OneToOne(mappedBy = "user",
+              fetch = FetchType.LAZY,
+              cascade = CascadeType.ALL)
+    private Carer carer;
     
     @OneToMany(mappedBy = "user",
                fetch = FetchType.LAZY,
                cascade = CascadeType.ALL)
     private List<SessionInstance> sessions;
-    
-    @OneToMany(mappedBy = "user",
-               fetch = FetchType.LAZY,
-               cascade = CascadeType.ALL)
-    private List<TransactionGroup> transactions;
-    
+
+
+
     protected User () {
     
     }
@@ -80,15 +83,15 @@ public class User {
     public void setSessions (List<SessionInstance> sessions) {
         this.sessions = sessions;
     }
-    
-    public List<TransactionGroup> getTransactions () {
-        return transactions;
+
+    public Carer getCarer() {
+        return carer;
     }
-    
-    public void setTransactions (List<TransactionGroup> transactions) {
-        this.transactions = transactions;
+
+    public void setCarer(Carer carer) {
+        this.carer = carer;
     }
-    
+
     @Override
     public String toString () {
         return "User{" +
