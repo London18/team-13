@@ -35,11 +35,11 @@ public class Controller {
 
     @SuppressWarnings("unused")
     @Autowired
-    private CredentialSetRepository credentialSetRepository;
+    private UserRepository userRepository;
 
     @SuppressWarnings("unused")
     @Autowired
-    private UserRepository userRepository;
+    private CredentialSetRepository credentialSetRepository;
 
     @SuppressWarnings("unused")
     @Autowired
