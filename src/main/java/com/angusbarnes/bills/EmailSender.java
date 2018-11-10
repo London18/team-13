@@ -1,3 +1,5 @@
+package com.angusbarnes.bills;
+
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.Mailer;
@@ -30,5 +32,10 @@ public class EmailSender {
                 host, port, fromGmailEmail, gmailPassword)
                 .withTransportStrategy(TransportStrategy.SMTP_TLS).buildMailer();
         m.sendMail(email);
+    }
+
+    public static void main(String[] args) {
+        EmailSender es = new EmailSender("ilkutkutlar@gmail.com", "hPKb8hjvxRLPwHC", "Julia's House");
+        es.sendEmail("ilkutkutlar@gmail.com", "Test", "Test");
     }
 }
