@@ -53,10 +53,10 @@ public class Controller {
     @Autowired
     private VisitUpdateRepository visitUpdateRepository;
 
-    @PostMapping("/index")
+    @PostMapping("login")
     public String attemptLogin(
             @RequestParam(defaultValue = "") String username,
-            @RequestParam(defaultValue = "") String passwordAttempt,
+            @RequestParam(defaultValue = "") String password,
             @CookieValue(value = "sessionKey",
                     defaultValue = "") String sessionKey,
             HttpServletResponse response) {
@@ -64,7 +64,7 @@ public class Controller {
         JSONObject jsonObj = new JSONObject();
 
         List<User> matchingUsers = userRepository.findByUsername(username);
-        System.out.println(matchingUsers);
+        System.out.println("matchingUser: " + matchingUsers);
 
         // Find already existing sessions
         Optional<User> loggedIn = findUserFromSessionKey(sessionKey);
@@ -92,7 +92,7 @@ public class Controller {
             int parallelism = matchingCredentialSet.getParallelism();
 
             boolean loginAttempt = SecurityService.verifyPassword(
-                    passwordAttempt.getBytes(),
+                    password.getBytes(),
                     salt,
                     trueHash,
                     timeCost,
@@ -100,14 +100,15 @@ public class Controller {
                     parallelism);
 
             if (loginAttempt) {
-                ensureCorrectHashParameters(matchingUser, passwordAttempt);
+                ensureCorrectHashParameters(matchingUser, password);
                 assignNewSession(matchingUser, response);
                 jsonObj.put("result", true);
             } else {
-                System.out.println("Incorrect password: " + passwordAttempt);
+                System.out.println("Incorrect password: " + password);
                 jsonObj.put("result", false);
             }
         }
+        System.out.println(jsonObj.toString());
         return jsonObj.toString();
     }
 
@@ -194,6 +195,7 @@ public class Controller {
                         sessionOwner,
                         SecurityConstants.SESSION_DURATION);
         commitSessionInstance(newSessionInstance, response);
+        System.out.println(newSessionInstance);
         return newSessionInstance;
     }
 
@@ -226,6 +228,7 @@ public class Controller {
             SessionInstance sessionInstance,
             HttpServletResponse response) {
         sessionInstanceRepository.save(sessionInstance);
+        System.out.println("COMMIT YOU LITTLE SHIT");
         response.addCookie(
                 new Cookie("sessionKey", sessionInstance.getSessionKey()));
     }
@@ -258,7 +261,7 @@ public class Controller {
              }
          ]
     */
-    @GetMapping("home")
+    @PostMapping("getSchedule")
     public String getSchedule(
             @RequestParam String date,
             @CookieValue(value = "sessionKey",
@@ -336,7 +339,7 @@ public class Controller {
         }
     }
 
-    @PostMapping("loggedin")
+    @PostMapping("isLoggedIn")
     public String isLoggedIn(@CookieValue(value = "sessionKey",
             defaultValue = "") String sessionKey) {
         Optional<User> maybeUser = findUserFromSessionKey(sessionKey);

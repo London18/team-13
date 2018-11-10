@@ -13,10 +13,11 @@ $(document).ready( function() {
       var received = JSON.parse(data);
     });
 
+    console.log(received.result);
     if (typeof received !== 'undefined' && received.result) {
       alert('Success');
-      $(location).attr('href', "./home.html");
-    } $(location).attr('href', "./index.html");
+      $(location).attr('href', "../../templates/home.html");
+    } $(location).attr('href', "../../templates/index.html");
 
   });
 });
