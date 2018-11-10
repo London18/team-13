@@ -85,6 +85,15 @@ public class DateService {
         // Return result
         return newCalendar.getTime();
     }
+
+    public static Date later (Date date, int hours, int mins) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR_OF_DAY, hours);
+        cal.add(Calendar.MINUTE, mins);
+
+        return cal.getTime();
+    }
     
     public static synchronized String formatDate (Date date) {
         return formatter.format(date);
