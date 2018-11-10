@@ -1,5 +1,6 @@
 package com.angusbarnes.bills.repository;
 
+import com.angusbarnes.bills.entity.Carer;
 import com.angusbarnes.bills.entity.SessionInstance;
 import com.angusbarnes.bills.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
