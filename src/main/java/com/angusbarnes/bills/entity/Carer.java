@@ -21,7 +21,7 @@ public class Carer {
     @OneToMany(mappedBy = "carer",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    List<ScheduleCarer> scheduleCarers;
+    private List<ScheduleCarer> scheduleCarers;
 
     private String address;
     private String phone;
@@ -31,8 +31,9 @@ public class Carer {
     protected Carer() {
     }
 
-    public Carer(User user, String address, String phone, String firstName, String lastName) {
+    public Carer(User user, List<ScheduleCarer> scheduleCarers, String address, String phone, String firstName, String lastName) {
         this.user = user;
+        this.scheduleCarers = scheduleCarers;
         this.address = address;
         this.phone = phone;
         this.firstName = firstName;
@@ -53,6 +54,14 @@ public class Carer {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<ScheduleCarer> getScheduleCarers() {
+        return scheduleCarers;
+    }
+
+    public void setScheduleCarers(List<ScheduleCarer> scheduleCarers) {
+        this.scheduleCarers = scheduleCarers;
     }
 
     public String getAddress() {

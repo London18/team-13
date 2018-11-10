@@ -15,11 +15,70 @@ public class VisitUpdate {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scheduleCarer")
-    ScheduleCarer scheduleCarer;
+    private ScheduleCarer scheduleCarer;
 
-    String action;
+    private String action;
 
-    Date time;
+    private Date time;
 
-    String comments;
+    private String comments;
+
+    protected VisitUpdate() {
+    }
+
+    public VisitUpdate(ScheduleCarer scheduleCarer, String action, Date time, String comments) {
+        this.scheduleCarer = scheduleCarer;
+        this.action = action;
+        this.time = time;
+        this.comments = comments;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ScheduleCarer getScheduleCarer() {
+        return scheduleCarer;
+    }
+
+    public void setScheduleCarer(ScheduleCarer scheduleCarer) {
+        this.scheduleCarer = scheduleCarer;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    @Override
+    public String toString() {
+        return "VisitUpdate{" +
+                "action='" + action + '\'' +
+                ", time=" + time +
+                ", comments='" + comments + '\'' +
+                '}';
+    }
 }

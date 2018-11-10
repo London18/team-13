@@ -13,11 +13,60 @@ public class Family {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    String name;
-    String address;
+    private String name;
+    private String address;
 
     @OneToMany(mappedBy = "family",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    List<ScheduleEvent> scheduleEvents;
+    private List<ScheduleEvent> scheduleEvents;
+
+    protected Family() {
+    }
+
+    public Family(String name, String address, List<ScheduleEvent> scheduleEvents) {
+        this.name = name;
+        this.address = address;
+        this.scheduleEvents = scheduleEvents;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public List<ScheduleEvent> getScheduleEvents() {
+        return scheduleEvents;
+    }
+
+    public void setScheduleEvents(List<ScheduleEvent> scheduleEvents) {
+        this.scheduleEvents = scheduleEvents;
+    }
+
+    @Override
+    public String toString() {
+        return "Family{" +
+                "name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

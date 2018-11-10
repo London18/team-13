@@ -15,14 +15,63 @@ public class ScheduleCarer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "scheduleEvent")
-    ScheduleEvent scheduleEvent;
+    private ScheduleEvent scheduleEvent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "carer")
-    Carer carer;
+    private Carer carer;
 
     @OneToMany(mappedBy = "scheduleCarer",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    List<VisitUpdate> visitUpdates;
+    private List<VisitUpdate> visitUpdates;
+
+    protected ScheduleCarer() {
+    }
+
+    public ScheduleCarer(ScheduleEvent scheduleEvent, Carer carer, List<VisitUpdate> visitUpdates) {
+        this.scheduleEvent = scheduleEvent;
+        this.carer = carer;
+        this.visitUpdates = visitUpdates;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ScheduleEvent getScheduleEvent() {
+        return scheduleEvent;
+    }
+
+    public void setScheduleEvent(ScheduleEvent scheduleEvent) {
+        this.scheduleEvent = scheduleEvent;
+    }
+
+    public Carer getCarer() {
+        return carer;
+    }
+
+    public void setCarer(Carer carer) {
+        this.carer = carer;
+    }
+
+    public List<VisitUpdate> getVisitUpdates() {
+        return visitUpdates;
+    }
+
+    public void setVisitUpdates(List<VisitUpdate> visitUpdates) {
+        this.visitUpdates = visitUpdates;
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleCarer{" +
+                "scheduleEvent=" + scheduleEvent +
+                ", carer=" + carer +
+                '}';
+    }
 }
