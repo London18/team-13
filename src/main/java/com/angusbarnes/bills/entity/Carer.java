@@ -31,9 +31,8 @@ public class Carer {
     protected Carer() {
     }
 
-    public Carer(User user, List<ScheduleCarer> scheduleCarers, String address, String phone, String firstName, String lastName) {
+    public Carer(User user, String address, String phone, String firstName, String lastName) {
         this.user = user;
-        this.scheduleCarers = scheduleCarers;
         this.address = address;
         this.phone = phone;
         this.firstName = firstName;
