@@ -18,6 +18,7 @@ $(document).ready( function() {
     html += "<td>" + s(received.schedule[i].end) + "</td>";
     html += "<td>" + s(received.schedule[i].faddr) + "</td>";
     html += "<td class='status'>" + s(received.schedule[i].status) + "</td></tr>";
+    html += "<td onclick="openComment()">Update Status</td>";
   }
 
   document.getElementByID('schedule_entries').append(html);
