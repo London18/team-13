@@ -61,7 +61,7 @@
         <td>Williams</td>
         <td>22:00</td>
         <td>03:00</td>
-        <td>11 Road, Town, Country, AB12 3CD</td>
+        <td>12 Road, Town, Country, AB12 3CD</td>
         <td>Arrived</td>
         <td class="clickable" onclick="openComment(3)">Update Status</td>
       </tr>
@@ -75,39 +75,73 @@
     <thead>
     <tr style="background-color:#0087CC">
       <th>Time</th>
+      <th>Family</th>
       <th>Action</th>
       <th>Comment</th>
-      <th>Address</th>
-      <th></th>
-      <th></th>
     </tr>
     </thead>
     <tbody>
     <div id="activity_entries">
+      <tr>
+        <td>10:54</td>
+        <td>Smith</td>
+        <td>Arrived</td>
+        <td>Arrived 5 minutes early</td>
+      </tr>
+      <tr>
+        <td>12:13</td>
+        <td>Smith</td>
+        <td>Left</td>
+        <td>Session overran</td>
+      </tr>
+      <tr>
+        <td>12:51</td>
+        <td>Smith</td>
+        <td>Home</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>14:49</td>
+        <td>Jones</td>
+        <td>Left</td>
+        <td>Family were out</td>
+      </tr>
+      <tr>
+        <td>21:50</td>
+        <td>Williams</td>
+        <td>Arrived</td>
+        <td></td>
+      </tr>
     </div>
     </tbody>
   </table>
 </div>
 
-
-
-
-
 <div id="grey_pop_up">
   <div id="comment_block">
-    <h1> Please add a comment </h1>
+    <h2 style="font-size:24pt;color:black;"> Status Update </h2>
     <form class="action">
-      <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Status</a>
+      <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:16pt">Status</a>
       <div class="dropdown-menu" aria-labelledby="dropdown01" id="action">
         <a class="dropdown-item" href="#" onclick="dropdown('Arrived')">Arrived</a>
         <a class="dropdown-item" href="#" onclick="dropdown('Left')">Left</a>
         <a class="dropdown-item" href="#" onclick="dropdown('Home')">Home</a>
       </div>
       <input type = "hidden" id="form_sid" value = "">
-      <input style="width:100%" type = "text"
+      
+      <div class="input-group" style="height:35vh;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" style="height:35vh">Comment</span>
+        </div>
+        <textarea id = "comment" class="form-control" aria-label="With textarea" form="actions"></textarea>
+      </div>
+      <br>
+
+
+      <!--<input style="width:100%;height:30vh;overflow:auto;" type = "text"
              id = "comment"
-             value = "" />
-      <input class="btn btn-lg btn-primary btn-block" type="submit" style="background-color:#0087CC"></input>
+             value = "" /> -->
+      <input class="btn btn-lg btn-primary btn-block" type="submit" style="background-color:#0087CC" onclick="refresh()"></input>
     </form>
 
   </div>
@@ -136,6 +170,10 @@
           if(event.target == grey_block) {
               grey_block.style.display = "none";
           }
+      }
+
+      function refresh(){
+        window.location.reload();
       }
 
   </script>
