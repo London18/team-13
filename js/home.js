@@ -26,7 +26,7 @@ $(document).ready( function() {
     var received = JSON.parse(data);
   });
 
-  var html;
+  html = "";
 
   for (i in received.activity) {
     html += "<tr id='" + s(received.activity[i].vid) + "'><td>" + s(received.activity[i].time) + "</td>";
