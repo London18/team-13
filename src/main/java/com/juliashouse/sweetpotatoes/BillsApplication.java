@@ -22,7 +22,7 @@ import java.util.Date;
 
 
 @SpringBootApplication
-@EntityScan(basePackages = {"com.angusbarnes.bills.entity"})
+@EntityScan(basePackages = {"com.juliashouse.sweetpotatoes.entity"})
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = {"com.juliashouse.sweetpotatoes.repository"})
 @ComponentScan({"com.juliashouse.sweetpotatoes.controller"})
