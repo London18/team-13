@@ -67,16 +67,4 @@ $(document).ready( function() {
 
   });
 
-  $("#logout").submit(function(e) {
-
-    received = null;
-    var data = {};
-    $.post("/logout", data, function(data) {
-      var received = JSON.parse(data);
-    });
-
-    window.location.replace("./index.html");
-
-  });
-
 });
