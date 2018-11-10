@@ -2,17 +2,9 @@ package com.angusbarnes.bills.controller;
 
 import com.angusbarnes.bills.SecurityConstants;
 import com.angusbarnes.bills.entity.CredentialSet;
-import com.angusbarnes.bills.entity.DataEncryptionKey;
-import com.angusbarnes.bills.entity.KeyEncryptionKeyData;
 import com.angusbarnes.bills.entity.SessionInstance;
-import com.angusbarnes.bills.entity.TransactionGroup;
 import com.angusbarnes.bills.entity.User;
-import com.angusbarnes.bills.repository.CredentialSetRepository;
-import com.angusbarnes.bills.repository.DataEncryptionKeyRepository;
-import com.angusbarnes.bills.repository.KeyEncryptionKeyDataRepository;
-import com.angusbarnes.bills.repository.SessionInstanceRepository;
-import com.angusbarnes.bills.repository.TransactionGroupRepository;
-import com.angusbarnes.bills.repository.UserRepository;
+import com.angusbarnes.bills.repository.*;
 import com.angusbarnes.bills.service.DateService;
 import com.angusbarnes.bills.service.SecurityService;
 import org.apache.logging.log4j.LogManager;
@@ -47,19 +39,21 @@ public class BillsController {
     private UserRepository userRepository;
     @SuppressWarnings("unused")
     @Autowired
-    private TransactionGroupRepository transactionGroupRepository;
-    @SuppressWarnings("unused")
-    @Autowired
     private SessionInstanceRepository sessionInstanceRepository;
     @SuppressWarnings("unused")
     @Autowired
     private CredentialSetRepository credentialSetRepository;
-    @SuppressWarnings("unused")
+
     @Autowired
-    private DataEncryptionKeyRepository dataEncryptionKeyRepository;
-    @SuppressWarnings("unused")
+    private CarerRepository carerRepository;
     @Autowired
-    private KeyEncryptionKeyDataRepository keyEncryptionKeyDataRepository;
+    private FamilyRepository familyRepository;
+    @Autowired
+    private ScheduleCarerRepository scheduleCarerRepository;
+    @Autowired
+    private ScheduleEventRepository scheduleEventRepository;
+    @Autowired
+    private VisitUpdateRepository visitUpdateRepository;
     
     private static RuntimeException logAndThrow (String m) {
         return getLogAndThrower(m).get();
@@ -339,199 +333,6 @@ public class BillsController {
         }
     }
     
-    private TransactionGroup initialiseTransactionGroup (
-            User user,
-            Date initialisationDate,
-            Date expiryDate) {
-        // Slightly neater shortcut for a new, empty byte array
-        Supplier<byte[]> e = () -> new byte[0];
-        // Create new transaction group
-        TransactionGroup newGroupEntity = new TransactionGroup(
-                user,
-                initialisationDate,
-                expiryDate,
-                e.get(),
-                e.get());
-        // Create dummy keys
-        DataEncryptionKey newDekEntity = new DataEncryptionKey(
-                e.get(),
-                e.get(),
-                newGroupEntity);
-        KeyEncryptionKeyData newKekEntity = new KeyEncryptionKeyData(
-                e.get(),
-                8,
-                1,
-                1,
-                newDekEntity);
-        // Initialise opposite direction connection
-        newGroupEntity.setDataEncryptionKey(newDekEntity);
-        newDekEntity.setKeyEncryptionKeyData(newKekEntity);
-        // Return new transaction group
-        // Don't need to save since we'll overwrite immediately anyway
-        return newGroupEntity;
-    }
-    
-    @PostMapping("set-transaction-group")
-    public boolean setTransactionGroup (
-            @RequestParam String unparsedDate,
-            @RequestParam String password,
-            @RequestParam String json,
-            @CookieValue(value = "sessionKey",
-                         defaultValue = "") String sessionKey) {
-        System.out.println("Date: " + unparsedDate);
-        // Find the user
-        User user = findUserFromSessionKey(sessionKey)
-                .orElseThrow(getLogAndThrower(
-                        "set-transaction-group invalid session key: "
-                                + sessionKey));
-        // Parse the date
-        Date date = DateService
-                .parseDate(unparsedDate)
-                .orElseThrow(getLogAndThrower(
-                        "set-transaction-group invalid date: " + unparsedDate));
-        // Ensure date rounds correctly
-        if (!DateService.getEarliestMondayMidnight(date).equals(date)) {
-            throw getLogAndThrower("set-transaction-group non-Monday date: "
-                    + date).get();
-        }
-        // Retrieve group
-        TransactionGroup group = transactionGroupRepository
-                .findByUserAndStartDate(user, date)
-                .stream()
-                .findFirst()
-                .orElseGet(() -> initialiseTransactionGroup(
-                        user,
-                        date,
-                        DateService.getFutureDate(
-                                DateService
-                                        .DEFAULT_TRANSACTION_GROUP_DURATION)));
-        // Generate new encryption information
-        byte[] newKekSalt = SecurityService.getSalt();
-        byte[] newDekIv = SecurityService
-                .getSaltOfLength(SecurityConstants.AES_BLOCK_SIZE);
-        byte[] newTransactionGroupIv = SecurityService
-                .getSaltOfLength(SecurityConstants.AES_BLOCK_SIZE);
-        int timeCost = SecurityConstants.HASH_TIME_COST;
-        int memoryCost = SecurityConstants.HASH_MEMORY_COST;
-        int parallelism = SecurityConstants.HASH_PARALLELISM;
-        
-        byte[] newKek = SecurityService.hashPassword(
-                password.getBytes(),
-                newKekSalt,
-                timeCost,
-                memoryCost,
-                parallelism);
-        byte[] newDek = SecurityService
-                .getSaltOfLength(SecurityConstants.AES_BLOCK_SIZE);
-        byte[] encryptedJson = SecurityService.aesEncrypt(
-                json.getBytes(),
-                newDek,
-                newTransactionGroupIv);
-        byte[] encryptedDek = SecurityService.aesEncrypt(
-                newDek,
-                newKek,
-                newDekIv);
-        
-        // Save new encrypted data and encryption information to database
-        group.setIv(newTransactionGroupIv);
-        group.setRawData(encryptedJson);
-        transactionGroupRepository.save(group);
-        
-        DataEncryptionKey dekEntity = group.getDataEncryptionKey();
-        dekEntity.setIv(newDekIv);
-        dekEntity.setEncryptedKey(encryptedDek);
-        dataEncryptionKeyRepository.save(dekEntity);
-        
-        KeyEncryptionKeyData kekEntity = dekEntity.getKeyEncryptionKeyData();
-        kekEntity.setSalt(newKekSalt);
-        kekEntity.setTimeCost(timeCost);
-        kekEntity.setMemoryCost(memoryCost);
-        kekEntity.setParallelism(parallelism);
-        keyEncryptionKeyDataRepository.save(kekEntity);
-        
-        // Signal success
-        return true;
-    }
-    
-    @PostMapping("get-transaction-group")
-    public String getTransactionGroup (
-            @RequestParam String unparsedDate,
-            @RequestParam String password,
-            @CookieValue(value = "sessionKey",
-                         defaultValue = "") String sessionKey) {
-        // Find the user
-        User user = findUserFromSessionKey(sessionKey)
-                .orElseThrow(getLogAndThrower(
-                        "get-transaction-group invalid session key: "
-                                + sessionKey));
-        // Parse the date
-        Date date = DateService.parseDate(unparsedDate)
-                .orElseThrow(getLogAndThrower(
-                        "get-transaction-group invalid date: "
-                                + unparsedDate));
-        // Find the relevant transaction group
-        TransactionGroup group = transactionGroupRepository
-                .findByUserAndStartDate(user, date)
-                .stream()
-                .findFirst()
-                .orElseThrow(getLogAndThrower(
-                        "get-transaction-group unable to locate group: "
-                                + unparsedDate));
-        // Generate the key-encryption-key, and decrypt the data-encryption-key
-        byte[] passwordBytes = password.getBytes();
-        DataEncryptionKey dekEntity = group.getDataEncryptionKey();
-        KeyEncryptionKeyData kekEntity = dekEntity.getKeyEncryptionKeyData();
-        byte[] generatedKek = SecurityService.hashPassword(
-                passwordBytes,
-                kekEntity.getSalt(),
-                kekEntity.getTimeCost(),
-                kekEntity.getMemoryCost(),
-                kekEntity.getParallelism());
-        byte[] decryptedDek = SecurityService.aesDecrypt(
-                dekEntity.getEncryptedKey(),
-                generatedKek,
-                dekEntity.getIv());
-        // Use the decrypted DEK to decrypt stored information
-        byte[] decryptedJson = SecurityService.aesDecrypt(
-                group.getRawData(),
-                decryptedDek,
-                group.getIv());
-        // Return stored information as a string
-        return new String(decryptedJson);
-    }
-    
-    /**
-     * Finds the {@link TransactionGroup} for a logged in user ({@code
-     * sessionKey}) at {@code Date}. Stored in an optional.
-     *
-     * @param sessionKey Session key of logged in user for which to find a
-     *                   transaction
-     * @param date       Date to search for transactions on
-     *
-     * @return Empty optional if no transactions found at date, or invalid
-     * session key. Full optional otherwise.
-     */
-    private Optional<TransactionGroup> findTransactionGroup (
-            String sessionKey,
-            Date date) {
-        Optional<User> user = findUserFromSessionKey(sessionKey);
-        if (user.isPresent()) {
-            List<TransactionGroup> transactions = transactionGroupRepository
-                    .findByUserAndStartDate(user.get(), date);
-            if (transactions.size() == 0) {
-                return Optional.empty();
-            } else {
-                if (transactions.size() > 1) {
-                    LOG.warn("Multiple transaction groups for same week - "
-                            + user.toString());
-                }
-                return Optional.of(transactions.get(0));
-            }
-        } else {
-            return Optional.empty();
-        }
-    }
-    
     @PostMapping("round-date")
     public String roundDate (
             @RequestParam(defaultValue = "") String unparsedDate) {
@@ -540,28 +341,6 @@ public class BillsController {
                 .orElseThrow(getLogAndThrower("round-date failure to parse"));
         Date dateRounded = DateService.getEarliestMondayMidnight(date);
         return DateService.formatDate(dateRounded);
-    }
-    
-    @PostMapping("get-transaction-group-headers")
-    public String getTransactionDates (
-            @CookieValue(value = "sessionKey",
-                         defaultValue = "") String sessionKey) {
-        // Check we're logged in
-        Optional<User> maybeUser = findUserFromSessionKey(sessionKey);
-        if (!maybeUser.isPresent()) {
-            LOG.info("Attempt to get transaction headers with no session key");
-            return "";
-        }
-        // Get transactions
-        JSONArray jsonArray = new JSONArray();
-        SimpleDateFormat formatter
-                = new SimpleDateFormat(DateService.DATE_FORMAT);
-        transactionGroupRepository
-                .findByUser(maybeUser.get())
-                .stream()
-                .map(tg -> formatter.format(tg.getStartDate()))
-                .forEachOrdered(jsonArray::put);
-        return new JSONObject().put("dates", jsonArray).toString();
     }
     
     
@@ -576,11 +355,6 @@ public class BillsController {
         } else {
             return "already not logged in";
         }
-    }
-    
-    @PostMapping("groups")
-    public String getAllGroups () {
-        return dumpRepository(transactionGroupRepository);
     }
     
     @GetMapping("users")
