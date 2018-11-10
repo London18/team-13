@@ -21,7 +21,7 @@ $(document).ready( function() {
     html += "<td onclick="openComment()">Update Status</td>";
   }
 
-  document.getElementByID('schedule_entries').append(html);
+  document.getElementById('schedule_entries').append(html);
 
   $.post("/getActivity", data, function(data) {
     var received = JSON.parse(data);
@@ -35,7 +35,7 @@ $(document).ready( function() {
     html += "<td>" + s(received.activity[i].comments) + "</td></tr>";
   }
 
-  document.getElementByID('activity_entries').append(html);
+  document.getElementById('activity_entries').append(html);
 
 
   var submitted = false;
