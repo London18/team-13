@@ -36,33 +36,91 @@
       <th>Address</th>
       <th>Carers</th>
       <th>Current Status</th>
+      <th>Time Since Leaving </th>
     </tr>
     </thead>
     <tbody>
     <div id="schedule_entries">
-      <tr id='1'>
+      <tr id='1'style='color:#32CD32'>
         <td>Smith</td>
         <td>11:00</td>
         <td>12:00</td>
         <td>10 Road, Town, County, AB12 3CD</td>
         <td>Tim Phillips</td>
         <td>Home</td>
+        <td>-</td>
       </tr>
-      <tr id='2'>
-        <td>Jones</td>
+      <tr id='2'style='color:red'>
+        <td >Jones</td>
         <td>14:30</td>
         <td>21:30</td>
         <td>11 Road, Town, Country, AB12 3CD</td>
         <td>Mandy Wilson</td>
         <td>Left</td>
+        <td>2h 30m</td>
       </tr>
-      <tr id='3'>
+      <tr id='3' style='color:orange'>
         <td>Williams</td>
         <td>22:00</td>
         <td>03:00</td>
         <td>11 Road, Town, Country, AB12 3CD</td>
         <td>Ruby James</td>
-        <td>Arrived</td>
+        <td>Left</td>
+        <td>10m</td>
+      </tr>
+      </tr>
+    </div>
+    </tbody>
+  </table>
+</div>
+
+
+<h3>Sessions To Be Assigned Carers</h3>
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+    <tr style="background-color:#ED145B">
+      <th>Family</th>
+      <th>Date</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Special Requests</th>
+      <th>Carers Required</th>
+      <th>Previous Carers</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <div id="session_entries">
+      <tr id='1'>
+        <td>Smith</td>
+        <td>12/11/2018</td>
+        <td>12:00</td>
+        <td>13:00</td>
+        <td>Cinema Trip</td>
+        <td>1 Carer, 1 Nurse</td>
+        <td>Mandy Wilson, Ruby James </td>
+        <td class="clickable" onclick="">Assign</td>
+      </tr>
+      <tr id='2'>
+        <td>Williams</td>
+        <td>23/11/2018</td>
+        <td>11:00</td>
+        <td>17:00</td>
+        <td></td>
+        <td>1 Carer</td>
+        <td>Mandy Wilson, Adam Paul</td>
+        <td class="clickable" onclick="">Assign</td>
+      </tr>
+      <tr id='3'>
+        <td>Jones</td>
+        <td>19/12/2018</td>
+        <td>07:00</td>
+        <td>12:00</td>
+        <td></td>
+        <td>2 Carers</td>
+        <td>Ross Stevens, Adam Paul, Tim Phillips</td>
+        <td class="clickable" onclick="">Assign</td>
       </tr>
       </tr>
     </div>
