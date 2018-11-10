@@ -4,7 +4,9 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <script src="js/security.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/home.js"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link href="css/home.css" rel="stylesheet">
@@ -35,7 +37,7 @@
               </thead>
               <tbody>
                 <div id="schedule_entries">
-                <tr>
+                <tr id='1'>
                   <td>Smith</td>
                   <td>11:00</td>
                   <td>12:00</td>
@@ -43,7 +45,7 @@
                   <td>Home</td>
                   <td onclick="openComment()">Update Status</td>
                 </tr>
-                <tr>
+                <tr id='2'>
                   <td>Jones</td>
                   <td>14:30</td>
                   <td>15:30</td>
@@ -52,7 +54,7 @@
                   <td onclick="openComment()">Update Status</td>
 
                 </tr>
-                <tr>
+                <tr id='3'>
                   <td>Williams</td>
                   <td>22:00</td>
                   <td>03:00</td>
@@ -65,18 +67,38 @@
             </table>
           </div>
 
+          <div class="table-responsive">
+                  <table class="table table-striped table-sm">
+                    <thead>
+                      <tr style="background-color:#0087CC">
+                        <th>Time</th>
+                        <th>Action</th>
+                        <th>Comment</th>
+                        <th>Address</th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <div id="activity_entries">
+                      </div>
+                    </tbody>
+                  </table>
+          </div>
+
     <div id="grey_pop_up">
         <div id="comment_block">
           <h1> Please add a comment </h1>
-        <form>
+        <form class="action">
           <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Status</a>
-          <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <div class="dropdown-menu" aria-labelledby="dropdown01" id="action">
             <a class="dropdown-item" href="#">Arrived</a>
             <a class="dropdown-item" href="#">Left</a>
             <a class="dropdown-item" href="#">Home</a>
           </div>
+          <input type = "hidden" id="form_sid" value = "">
           <input style="width:100%" type = "text"
-                 id = "comment_box"
+                 id = "comment"
                  value = "" />
         </form>
 
@@ -94,16 +116,18 @@
     <script>
       var grey_block = document.getElementById('grey_pop_up');
 
-      function openComment(){
+      function openComment() {
         document.getElementById("grey_pop_up").style.display="block";
+        var sid = this.parent.attr('id');
+        document.getElementById('form_sid').value = sid;
       }
 
       window.onclick = function(event){
         if(event.target == grey_block) {
           grey_block.style.display = "none";
-        } 
+        }
       }
-      
+
     </script>
   </body>
 </html>
