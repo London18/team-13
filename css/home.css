@@ -1,0 +1,23 @@
+#grey_pop_up{
+	display: none;						/*default to be hidden*/
+	position: fixed;					/*stays in place*/
+	justify-content: center;
+	width:100%;
+	height:100%;
+	z-index:1; 							/*Makes this the top layer */
+	top: 0px;
+	background-color:rgba(0,0,0,0.7);	/*semi-opaque black*/
+}
+
+#comment_block{
+	position: fixed;
+	align-items: center;			/*vertical align contents*/
+	margin-top: 18vh;
+	margin-left: 28vw;
+	width: 40vw;
+	height: 60vh;
+	z-index:1;
+	background: white;
+	padding:2%;
+	border-radius: 10px;
+}
