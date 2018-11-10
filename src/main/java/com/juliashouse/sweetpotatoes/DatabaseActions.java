@@ -1,7 +1,6 @@
 package com.juliashouse.sweetpotatoes;
 
-import com.juliashouse.sweetpotatoes.entity.Family;
-import com.juliashouse.sweetpotatoes.entity.ScheduleEvent;
+import com.juliashouse.sweetpotatoes.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -33,7 +32,47 @@ public class DatabaseActions {
         return family;
     }
 
-    public List<ScheduleEvent> getSchedule(String carerId, String date, String SessionId) {
+    public ScheduleEvent getScheduleEventById(int id) {
+        String sql = String.format("SELECT * FROM ScheduleEvent WHERE ScheduleID = " + id, id);
+        return template.queryForObject(sql, new RowMapper<ScheduleEvent>() {
+            @Override
+            public ScheduleEvent mapRow(ResultSet resultSet, int i) throws SQLException {
+                return new ScheduleEvent(resultSet.getDate("dateStart"), resultSet.getDate("dateEnd"), getFamily(resultSet.getInt("familyId")));
+            }
+        });
+    }
+
+    public Carer getCarerById(int id) {
+        String sql = String.format("SELECT * FROM ScheduleEvent WHERE ScheduleID = " + id, id);
+        return template.queryForObject(sql, new RowMapper<Carer>() {
+            @Override
+            public Carer mapRow(ResultSet resultSet, int i) throws SQLException {
+                return new Carer(new User(""), resultSet.getString("address"),
+                        resultSet.getString("phone"), resultSet.getString("firstName"), resultSet.getString("lastName"));
+            }
+        });
+    }
+
+    public List<VisitUpdate> getVisitUpdates(int scheduleId) {
+        String sql = String.format("SELECT * FROM SCHEDULE_CARER JOIN VISIT_UPDATE " +
+                "ON SCHEDULE_CARER.ScheduleCarerID = VISIT_UPDATE.ScheduleCarerID" +
+                " WHERE ScheduleID = %s", scheduleId);
+
+        List<VisitUpdate> visitUpdates;
+        visitUpdates = template.query(sql, new Object[]{}, new RowMapper<VisitUpdate>() {
+            @Override
+            public VisitUpdate mapRow(ResultSet resultSet, int i) throws SQLException {
+                return new VisitUpdate(null,            // TODO
+                        resultSet.getString("action"), resultSet.getDate("time"),
+                        resultSet.getString("comments"));
+            }
+        });
+
+        return visitUpdates;
+
+    }
+
+    public List<ScheduleEvent> getSchedule(int carerId, String date, String SessionId) {
         String sql = String.format("SELECT * FROM SCHEDULE_CARER JOIN SCHEDULE_EVENT ON SCHEDULE_CARER.CarerID = SCHEDULE_EVENT.ScheduleID WHERE CarerID = %s",
                 carerId);
         List<ScheduleEvent> scheduleEvents;
@@ -45,4 +84,6 @@ public class DatabaseActions {
         });
         return scheduleEvents;
     }
+
+
 }
