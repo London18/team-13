@@ -15,5 +15,5 @@ $(document).ready( function() {
     if (received.result) window.location.replace("./home.html");
     window.location.replace("./index.html");
 
-  }
+  });
 }
