@@ -1,16 +1,23 @@
-package com.angusbarnes.bills.controller;
+package com.juliashouse.sweetpotatoes.controller;
 
-import com.angusbarnes.bills.SecurityConstants;
-import com.angusbarnes.bills.entity.*;
-import com.angusbarnes.bills.repository.*;
-import com.angusbarnes.bills.service.DateService;
-import com.angusbarnes.bills.service.SecurityService;
-import com.google.gson.JsonObject;
+import com.juliashouse.sweetpotatoes.SecurityConstants;
+import com.juliashouse.sweetpotatoes.entity.CredentialSet;
+import com.juliashouse.sweetpotatoes.entity.ScheduleCarer;
+import com.juliashouse.sweetpotatoes.entity.ScheduleEvent;
+import com.juliashouse.sweetpotatoes.entity.SessionInstance;
+import com.juliashouse.sweetpotatoes.entity.User;
+import com.juliashouse.sweetpotatoes.entity.VisitUpdate;
+import com.juliashouse.sweetpotatoes.repository.CredentialSetRepository;
+import com.juliashouse.sweetpotatoes.repository.ScheduleCarerRepository;
+import com.juliashouse.sweetpotatoes.repository.SessionInstanceRepository;
+import com.juliashouse.sweetpotatoes.repository.UserRepository;
+import com.juliashouse.sweetpotatoes.repository.VisitUpdateRepository;
+import com.juliashouse.sweetpotatoes.service.DateService;
+import com.juliashouse.sweetpotatoes.service.SecurityService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +54,7 @@ public class Controller {
     private VisitUpdateRepository visitUpdateRepository;
 
     @PostMapping("/index")
-    public String attemptLogin (
+    public String attemptLogin(
             @RequestParam(defaultValue = "") String username,
             @RequestParam(defaultValue = "") String passwordAttempt,
             @CookieValue(value = "sessionKey",
@@ -112,7 +119,7 @@ public class Controller {
      * @param correctPassword If the hash iterations is incorrect, this is
      *                        hashed the correct number of times.
      */
-    private void ensureCorrectHashParameters (
+    private void ensureCorrectHashParameters(
             User user,
             String correctPassword) {
         CredentialSet userCredentialSet = user.getCredentialSet();
@@ -133,7 +140,7 @@ public class Controller {
      * @param user        User to update
      * @param newPassword New password to set
      */
-    private void changePassword (User user, String newPassword) {
+    private void changePassword(User user, String newPassword) {
         // TODO - update saved transaction groups' encryption
         byte[] newSalt = SecurityService.getSalt();
         byte[] newHash = SecurityService.hashPassword(
@@ -157,11 +164,10 @@ public class Controller {
      * Attempts to find a single user by a session key
      *
      * @param sessionKey The session key
-     *
      * @return An Optional filled with a User if present, or empty Optional
      * otherwise
      */
-    private Optional<User> findUserFromSessionKey (String sessionKey) {
+    private Optional<User> findUserFromSessionKey(String sessionKey) {
         List<SessionInstance> matchingSessions = sessionInstanceRepository
                 .findBySessionKeyAndExpiryDateGreaterThan(
                         sessionKey,
@@ -178,10 +184,9 @@ public class Controller {
      * @param sessionOwner The user to generate a session for
      * @param response     The HTTP server response to use to return the session
      *                     key as a cookie
-     *
      * @return The newly created SessionInstance object
      */
-    private SessionInstance assignNewSession (
+    private SessionInstance assignNewSession(
             User sessionOwner,
             HttpServletResponse response) {
         SessionInstance newSessionInstance =
@@ -198,11 +203,10 @@ public class Controller {
      *
      * @param sessionOwner The user the session is for
      * @param duration     How long until the session key expires, in seconds
-     *
      * @return A SessionInstance entity representing an entry in the
      * SessionInstance table
      */
-    private SessionInstance getNewSessionKey (User sessionOwner, int duration) {
+    private SessionInstance getNewSessionKey(User sessionOwner, int duration) {
         String key = SecurityService.generateSessionKey(
                 SecurityConstants.SESSION_KEY_LENGTH);
         Date expiryDate = DateService.getFutureDate(duration);
@@ -218,7 +222,7 @@ public class Controller {
      * @param response        The HTTP server response to use to return the
      *                        session key as a cookie
      */
-    private void commitSessionInstance (
+    private void commitSessionInstance(
             SessionInstance sessionInstance,
             HttpServletResponse response) {
         sessionInstanceRepository.save(sessionInstance);
@@ -232,7 +236,7 @@ public class Controller {
      *
      * @param user User to force sign out
      */
-    private void invalidateSessions (User user) {
+    private void invalidateSessions(User user) {
         sessionInstanceRepository
                 .findByUserAndExpiryDateGreaterThan(
                         user,
@@ -268,10 +272,10 @@ public class Controller {
             List<ScheduleEvent> scheduleEvents = user.get().getCarer()
                     .getScheduleCarers()
                     .stream().map
-                    (ScheduleCarer::getScheduleEvent)
+                            (ScheduleCarer::getScheduleEvent)
                     .collect(Collectors.toList());
 
-            for (ScheduleEvent scheduleEvent: scheduleEvents) {
+            for (ScheduleEvent scheduleEvent : scheduleEvents) {
                 Long sid = scheduleEvent.getId();
                 Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String start = formatter.format(scheduleEvent.getStart()
@@ -308,7 +312,7 @@ public class Controller {
             @RequestParam int SCID) throws ParseException {
 
         ScheduleCarer scheduleCarer = scheduleCarerRepository
-                .findById(SCID).get();
+                .findById(SCID).orElseThrow(() -> new RuntimeException("SCID error"));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = formatter.parse(formatter.format(new Date()));
@@ -320,7 +324,7 @@ public class Controller {
     }
 
     @PostMapping("logout")
-    public String logout (
+    public String logout(
             @CookieValue(value = "sessionKey",
                     defaultValue = "") String sessionKey) {
         Optional<User> user = findUserFromSessionKey(sessionKey);
@@ -333,7 +337,7 @@ public class Controller {
     }
 
     @PostMapping("loggedin")
-    public String isLoggedIn( @CookieValue(value = "sessionKey",
+    public String isLoggedIn(@CookieValue(value = "sessionKey",
             defaultValue = "") String sessionKey) {
         Optional<User> maybeUser = findUserFromSessionKey(sessionKey);
         if (maybeUser.isPresent()) {
