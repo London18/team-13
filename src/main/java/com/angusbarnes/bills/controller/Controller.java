@@ -1,24 +1,26 @@
 package com.angusbarnes.bills.controller;
 
 import com.angusbarnes.bills.SecurityConstants;
-import com.angusbarnes.bills.entity.CredentialSet;
-import com.angusbarnes.bills.entity.SessionInstance;
-import com.angusbarnes.bills.entity.User;
-import com.angusbarnes.bills.repository.CredentialSetRepository;
-import com.angusbarnes.bills.repository.SessionInstanceRepository;
-import com.angusbarnes.bills.repository.UserRepository;
+import com.angusbarnes.bills.entity.*;
+import com.angusbarnes.bills.repository.*;
 import com.angusbarnes.bills.service.DateService;
 import com.angusbarnes.bills.service.SecurityService;
+import com.google.gson.JsonObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -36,17 +38,24 @@ public class Controller {
     @Autowired
     private SessionInstanceRepository sessionInstanceRepository;
 
+    @SuppressWarnings("unused")
+    @Autowired
+    private ScheduleCarerRepository scheduleCarerRepository;
+
+    @SuppressWarnings("unused")
+    @Autowired
+    private VisitUpdateRepository visitUpdateRepository;
+
     @PostMapping("/index")
-//    {
-//      result:true
-//      }
-//
     public String attemptLogin (
             @RequestParam(defaultValue = "") String username,
             @RequestParam(defaultValue = "") String passwordAttempt,
             @CookieValue(value = "sessionKey",
                     defaultValue = "") String sessionKey,
             HttpServletResponse response) {
+
+        JSONObject jsonObj = new JSONObject();
+
         List<User> matchingUsers = userRepository.findByUsername(username);
         System.out.println(matchingUsers);
 
@@ -86,12 +95,13 @@ public class Controller {
             if (loginAttempt) {
                 ensureCorrectHashParameters(matchingUser, passwordAttempt);
                 assignNewSession(matchingUser, response);
-                return "true";
+                jsonObj.put("result", true);
             } else {
                 System.out.println("Incorrect password: " + passwordAttempt);
-                return "false";
+                jsonObj.put("result", false);
             }
         }
+        return jsonObj.toString();
     }
 
     /**
@@ -233,25 +243,7 @@ public class Controller {
                 });
     }
 
-    @GetMapping("carer_homepage")
-    public String getSchedule(
-            @RequestParam String date,
-            @CookieValue(value = "sessionKey",
-                    defaultValue = "") String sessionKey) {
-
-        Optional<User> user = findUserFromSessionKey(sessionKey);
-        if (user.isPresent()) {
-            JSONObject jsonObj = new JSONObject();
-            JSONArray jsonArray = new JSONArray();
-
-            user.getCarer().getScheduleCarers().stream().map(x -> x
-                    .getScheduleEvent());
-
-        } else {
-            return "error";
-        }
-
-        // need to get schedule IDS of user
+    // need to get schedule IDS of user
         /*
         schedule: [
             {sid: bjsjnck,
@@ -261,8 +253,50 @@ public class Controller {
              status: arrived, left, home (most recent status)
              }
          ]
-         */
-        return "";
+    */
+    @GetMapping("home")
+    public String getSchedule(
+            @RequestParam String date,
+            @CookieValue(value = "sessionKey",
+                    defaultValue = "") String sessionKey) {
+
+        JSONObject jsonObj = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        Optional<User> user = findUserFromSessionKey(sessionKey);
+        if (user.isPresent()) {
+
+            List<ScheduleEvent> scheduleEvents = user.get().getCarer()
+                    .getScheduleCarers()
+                    .stream().map
+                    (ScheduleCarer::getScheduleEvent)
+                    .collect(Collectors.toList());
+
+            for (ScheduleEvent scheduleEvent: scheduleEvents) {
+                Long sid = scheduleEvent.getId();
+                Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String start = formatter.format(scheduleEvent.getStart()
+                        .toString());
+                String end = formatter.format(scheduleEvent.getEnd()
+                        .toString());
+                String fname = scheduleEvent.getFamily().getName();
+
+                //TODO: status query
+                String status = "arrived";
+
+                jsonObj.put("sid", sid);
+                jsonObj.put("start", start);
+                jsonObj.put("end", end);
+                jsonObj.put("fname", fname);
+                jsonObj.put("status", status);
+            }
+
+            jsonArray.put(jsonObj);
+        } else {
+            return "error";
+        }
+
+        JSONObject finalObj = new JSONObject();
+        return finalObj.put("schedule", jsonArray).toString();
     }
 
     @PostMapping("postAction")
@@ -271,7 +305,17 @@ public class Controller {
             @RequestParam String comment,
             @CookieValue(value = "sessionKey",
                     defaultValue = "") String sessionKey,
-            @RequestParam int SCID) {
+            @RequestParam int SCID) throws ParseException {
+
+        ScheduleCarer scheduleCarer = scheduleCarerRepository
+                .findById(SCID).get();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = formatter.parse(formatter.format(new Date()));
+
+        VisitUpdate visitUpdate = new VisitUpdate(scheduleCarer, actionStr,
+                date, comment);
+        visitUpdateRepository.save(visitUpdate);
         return "";
     }
 
