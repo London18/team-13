@@ -63,6 +63,7 @@ public class Family {
 
     @Override
     public String toString() {
+//        return "";
         return "Family{" +
                 "name='" + name + '\'' +
                 ", address='" + address + '\'' +

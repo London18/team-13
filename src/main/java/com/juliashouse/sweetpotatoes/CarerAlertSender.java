@@ -11,37 +11,24 @@ import java.util.List;
 public class CarerAlertSender {
     // Send an alert after this many minutes have passed after the
     // carer has left and hasn't arrived home.
-    private int minutesLeftAlert = 120;
+    private final int minutesAfterLeftNotHome;
     // Send an alert after this many minutes have passed after the
     // session has ended but the carer hasn't notified that they have left.
-    private int minutesEndedAlert = 30;
-
-    public int getMinutesLeftAlert() {
-        return minutesLeftAlert;
-    }
-
-    public void setMinutesLeftAlert(int minutesLeftAlert) {
-        this.minutesLeftAlert = minutesLeftAlert;
-    }
-
-    public int getMinutesEndedAlert() {
-        return minutesEndedAlert;
-    }
-
-    public void setMinutesEndedAlert(int minutesEndedAlert) {
-        this.minutesEndedAlert = minutesEndedAlert;
-    }
+    private final int minutesAfterSessionEnd;
 
     public CarerAlertSender() {
+        // Default values
+        minutesAfterLeftNotHome = 120;
+        minutesAfterSessionEnd = 30;
     }
 
-    public CarerAlertSender(int minutesLeftAlert, int minutesEndedAlert) {
-        this.minutesLeftAlert = minutesLeftAlert;
-        this.minutesEndedAlert = minutesEndedAlert;
+    public CarerAlertSender(int minutesAfterLeftNotHome, int minutesAfterSessionEnd) {
+        this.minutesAfterLeftNotHome = minutesAfterLeftNotHome;
+        this.minutesAfterSessionEnd = minutesAfterSessionEnd;
     }
 
     // TODO: Username and Password - I won't hardcode my details here!
-    private EmailSender es = new EmailSender("", "", "Julia's House");
+    private EmailSender es = new EmailSender(System.getenv("EMAIL_USERNAME"), System.getenv("EMAIL_PASSWORD"), "Julia's House");
 
     private boolean hasLeft(ScheduleCarer session) {
         for (VisitUpdate update : session.getVisitUpdates()) {
@@ -77,7 +64,7 @@ public class CarerAlertSender {
 
     private boolean minutesPassedAfterEventEnded(ScheduleEvent se) {
         Date now = new Date();
-        Date endMinutesLater = new Date(se.getEnd().getTime() + minutesEndedAlert * 60 * 1000);
+        Date endMinutesLater = new Date(se.getEnd().getTime() + minutesAfterSessionEnd * 60 * 1000);
         return now.after(endMinutesLater);
     }
 
@@ -93,7 +80,7 @@ public class CarerAlertSender {
             }
 
 
-            Date leftMinutesLater = new Date(leaveTime.getTime() + minutesLeftAlert * 60 * 1000);
+            Date leftMinutesLater = new Date(leaveTime.getTime() + minutesAfterLeftNotHome * 60 * 1000);
             return now.after(leftMinutesLater);
         } else {
             return false;
@@ -103,8 +90,9 @@ public class CarerAlertSender {
     public void checkForCarerAlerts(List<Carer> allCarers) {
         for (Carer carer : allCarers) {
             for (ScheduleCarer session : carer.getScheduleCarers()) {
-
+                System.out.println(carer + ": " + session + ": " + isHome(session));
                 if (hasLeft(session) && !isHome(session) && minutesPassedAfterLeavingPosted(session)) {
+                    System.out.println("Not home!!!");
                     // Case 1: Left the session with a family, and hasn't arrived
                     // home after 2 hours of saying they left.
                     es.sendEmail("", "Alert: Carer hasn't notified they have arrived home",
@@ -113,6 +101,7 @@ public class CarerAlertSender {
 
                 } else if (isScheduleEventEnded(session) && !hasLeft(session)
                         && minutesPassedAfterEventEnded(session.getScheduleEvent())) {
+                    System.out.println("Session ended without report!!!");
                     // Case 2: The session with family has ended, and after 30
                     // minutes the carer hasn't said "I've left" yet.
 

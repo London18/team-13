@@ -1,5 +1,6 @@
 package com.juliashouse.sweetpotatoes.controller;
 
+import com.juliashouse.sweetpotatoes.CarerAlertSender;
 import com.juliashouse.sweetpotatoes.SecurityConstants;
 import com.juliashouse.sweetpotatoes.entity.CredentialSet;
 import com.juliashouse.sweetpotatoes.entity.ScheduleCarer;
@@ -7,6 +8,7 @@ import com.juliashouse.sweetpotatoes.entity.ScheduleEvent;
 import com.juliashouse.sweetpotatoes.entity.SessionInstance;
 import com.juliashouse.sweetpotatoes.entity.User;
 import com.juliashouse.sweetpotatoes.entity.VisitUpdate;
+import com.juliashouse.sweetpotatoes.repository.CarerRepository;
 import com.juliashouse.sweetpotatoes.repository.CredentialSetRepository;
 import com.juliashouse.sweetpotatoes.repository.ScheduleCarerRepository;
 import com.juliashouse.sweetpotatoes.repository.SessionInstanceRepository;
@@ -17,6 +19,7 @@ import com.juliashouse.sweetpotatoes.service.SecurityService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -52,6 +55,18 @@ public class Controller {
     @SuppressWarnings("unused")
     @Autowired
     private VisitUpdateRepository visitUpdateRepository;
+
+    @SuppressWarnings("unused")
+    @Autowired
+    private CarerRepository carerRepository;
+
+    private CarerAlertSender carerAlertSender = new CarerAlertSender();
+
+    @Scheduled(fixedRate = 1000)
+    public void checkUnconfirmed() {
+        System.out.println("Does it work");
+        carerAlertSender.checkForCarerAlerts(carerRepository.findAll());
+    }
 
     @PostMapping("/index")
     public String attemptLogin(

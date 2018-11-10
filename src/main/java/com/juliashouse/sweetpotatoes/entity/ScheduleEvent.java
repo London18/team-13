@@ -61,12 +61,13 @@ public class ScheduleEvent {
         this.family = family;
     }
 
-    @Override
-    public String toString() {
-        return "ScheduleEvent{" +
-                "start=" + start +
-                ", end=" + end +
-                ", family=" + family +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+////        return "hmmm";
+////        return "ScheduleEvent{" +
+////                "start=" + start +
+////                ", end=" + end +
+////                ", family=" + family +
+////                '}';
+//    }
 }
