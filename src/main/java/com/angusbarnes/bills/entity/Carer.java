@@ -7,7 +7,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "credentialSet")
+@Table(name = "carer")
 @EntityListeners(AuditingEntityListener.class)
 public class Carer {
     @Id
