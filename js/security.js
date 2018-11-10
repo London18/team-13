@@ -9,5 +9,5 @@ function checkLogin() {
   $.post("/isLoggedIn", data, function(data) {
     var received = JSON.parse(data);
   });
-  if (received.username = "") window.location.replace("./index.html");
+  //if (typeof received == 'undefined' || received.username == "") $(location).attr('href', "./index.html");
 }

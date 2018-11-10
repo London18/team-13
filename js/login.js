@@ -1,6 +1,9 @@
 $(document).ready( function() {
 
   $("#login").submit(function(e) {
+
+    e.preventDefault();
+
     var username = s($(this.elements['username']).val());
     var password = s($(this.elements['password']).val());
 
@@ -10,10 +13,10 @@ $(document).ready( function() {
       var received = JSON.parse(data);
     });
 
-    e.preventDefault();
-
-    if (received.result) window.location.replace("./home.html");
-    window.location.replace("./index.html");
+    if (typeof received !== 'undefined' && received.result) {
+      alert('Success');
+      $(location).attr('href', "./home.html");
+    } $(location).attr('href', "./index.html");
 
   });
 });
