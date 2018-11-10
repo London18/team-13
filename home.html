@@ -92,9 +92,9 @@
         <form class="action">
           <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Status</a>
           <div class="dropdown-menu" aria-labelledby="dropdown01" id="action">
-            <a class="dropdown-item" href="#">Arrived</a>
-            <a class="dropdown-item" href="#">Left</a>
-            <a class="dropdown-item" href="#">Home</a>
+            <a class="dropdown-item" href="#" onclick="dropdown('Arrived')">Arrived</a>
+            <a class="dropdown-item" href="#" onclick="dropdown('Left')">Left</a>
+            <a class="dropdown-item" href="#" onclick="dropdown('Home')">Home</a>
           </div>
           <input type = "hidden" id="form_sid" value = "">
           <input style="width:100%" type = "text"
@@ -120,6 +120,10 @@
         document.getElementById("grey_pop_up").style.display="block";
         var sid = this.parent.attr('id');
         document.getElementById('form_sid').value = sid;
+      }
+
+      function dropdown(str) {
+        document.getElementById("dropdown01").value = s(str);
       }
 
       window.onclick = function(event){
