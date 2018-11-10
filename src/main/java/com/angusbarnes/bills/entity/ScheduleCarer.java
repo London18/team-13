@@ -29,10 +29,9 @@ public class ScheduleCarer {
     protected ScheduleCarer() {
     }
 
-    public ScheduleCarer(ScheduleEvent scheduleEvent, Carer carer, List<VisitUpdate> visitUpdates) {
+    public ScheduleCarer(ScheduleEvent scheduleEvent, Carer carer) {
         this.scheduleEvent = scheduleEvent;
         this.carer = carer;
-        this.visitUpdates = visitUpdates;
     }
 
     public Long getId() {
