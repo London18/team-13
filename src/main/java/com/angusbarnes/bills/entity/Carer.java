@@ -2,15 +2,8 @@ package com.angusbarnes.bills.entity;
 
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -24,6 +17,11 @@ public class Carer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     private User user;
+
+    @OneToMany(mappedBy = "carer",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    List<ScheduleCarer> scheduleCarers;
 
     private String address;
     private String phone;
