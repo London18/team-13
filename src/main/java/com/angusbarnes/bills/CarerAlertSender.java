@@ -4,16 +4,13 @@ import com.angusbarnes.bills.entity.Carer;
 import com.angusbarnes.bills.entity.ScheduleCarer;
 import com.angusbarnes.bills.entity.ScheduleEvent;
 import com.angusbarnes.bills.entity.VisitUpdate;
-import org.simplejavamail.email.Email;
 
 import java.util.Date;
 import java.util.List;
 
-public class NotificationSender {
-
-    // Username and Password - I won't hardcode my details here!
+public class CarerAlertSender {
+    // TODO: Username and Password - I won't hardcode my details here!
     private EmailSender es = new EmailSender("", "", "Julia's House");
-
 
     private boolean hasLeft(ScheduleCarer session) {
         for (VisitUpdate update : session.getVisitUpdates()) {
@@ -23,7 +20,6 @@ public class NotificationSender {
         }
         return false;
     }
-
     private boolean hasArrived(ScheduleCarer session) {
         for (VisitUpdate update : session.getVisitUpdates()) {
             if (update.getAction().equals("arrived")) {
@@ -32,7 +28,6 @@ public class NotificationSender {
         }
         return false;
     }
-
     private boolean isHome(ScheduleCarer session) {
         for (VisitUpdate update : session.getVisitUpdates()) {
             if (update.getAction().equals("home")) {
@@ -46,14 +41,12 @@ public class NotificationSender {
         Date now = new Date();
         return session.getScheduleEvent().getEnd().after(now);
     }
-
     private boolean minutesPassedAfterEventEnded(ScheduleEvent se) {
         Date now = new Date();
         int x = 30;
         Date endMinutesLater = new Date(se.getEnd().getTime() + x * 60 * 1000);
         return now.after(endMinutesLater);
     }
-
     private boolean minutesPassedAfterLeavingPosted(ScheduleCarer session) {
         if (hasLeft(session)) {
             Date now = new Date();
@@ -74,7 +67,7 @@ public class NotificationSender {
         }
     }
 
-    public void sendNotifications(List<Carer> allCarers) {
+    public void checkForCarerAlerts(List<Carer> allCarers) {
         for (Carer carer : allCarers) {
             for (ScheduleCarer session : carer.getScheduleCarers()) {
 

@@ -11,11 +11,10 @@ import com.angusbarnes.bills.repository.ScheduleEventRepository;
 
 import java.sql.Date;
 
-public class CsvParser {
+public class ScheduleUpdater {
     // FamilyID, start, end, payrollID1, payrollID2, payrollID3
 
-    // Assume that this is what you received from the endpoint
-    public void parseCSV(String csv,
+    public void parseScheduleCSV(String csv,
                          ScheduleEventRepository ser,
                          ScheduleCarerRepository scr,
                          CarerRepository cr,
